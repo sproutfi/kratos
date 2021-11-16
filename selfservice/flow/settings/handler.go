@@ -4,6 +4,9 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/ory/kratos/schema"
+	errors2 "github.com/ory/kratos/schema/errors"
+
 	"github.com/julienschmidt/httprouter"
 	"github.com/pkg/errors"
 
@@ -15,7 +18,6 @@ import (
 	"github.com/ory/kratos/continuity"
 	"github.com/ory/kratos/driver/config"
 	"github.com/ory/kratos/identity"
-	"github.com/ory/kratos/schema"
 	"github.com/ory/kratos/selfservice/errorx"
 	"github.com/ory/kratos/selfservice/flow"
 	"github.com/ory/kratos/session"
@@ -536,14 +538,14 @@ func (h *Handler) submitSettingsFlow(w http.ResponseWriter, r *http.Request, ps 
 	}
 
 	if updateContext == nil {
-		h.d.SettingsFlowErrorHandler().WriteFlowError(w, r, node.DefaultGroup, f, ss.Identity, errors.WithStack(schema.NewNoSettingsStrategyResponsible()))
+		h.d.SettingsFlowErrorHandler().WriteFlowError(w, r, node.DefaultGroup, f, ss.Identity, errors.WithStack(errors2.NewNoSettingsStrategyResponsible()))
 		return
 	}
 
 	i, err := updateContext.GetIdentityToUpdate()
 	if err != nil {
 		// An identity to update must always be present.
-		h.d.SettingsFlowErrorHandler().WriteFlowError(w, r, node.DefaultGroup, f, ss.Identity, err)
+		h.d.SettingsFlowErrorHandler().WriteFlowError(w, r, node.DefaultGroup, f, ss.Identity, errors.WithStack(errors2.NewNoSettingsStrategyResponsible()))
 		return
 	}
 
